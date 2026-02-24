@@ -10,25 +10,23 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+# Build with Maven
 - task: Maven@4
   inputs:
-    mavenPomFile: 'pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.11'
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    mavenPOMFile: '**/pom.xml'   # searches for pom.xml in any subfolder
     goals: 'package'
+
+# Copy WAR file(s) from wherever Maven created them
 - task: CopyFiles@2
   inputs:
-      SourceFolder: '$(System.DefaultWorkingDirectory)/target'
-      Contents: '**/*.war'
-      TargetFolder: '$(build.artifactstagingdirectory)'
+    SourceFolder: '$(System.DefaultWorkingDirectory)'
+    Contents: '**/target/*.war'   # recursively find any .war inside any target folder
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+# Publish the artifact
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'warfile'
-    publishLocation: 'Container'
 
 
