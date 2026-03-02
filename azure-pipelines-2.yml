@@ -15,6 +15,7 @@ steps:
 
 - script: |
     echo Add other tasks to build, test, and deploy your project.
+    echo hi !!!!
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
 - task: Maven@4
@@ -27,4 +28,13 @@ steps:
     mavenAuthenticateFeed: false
     effectivePomSkip: false
     sonarQubeRunAnalysis: false
+- task: CopyFiles@2
+  inputs:
+    Contents: '**/*war'
+    TargetFolder: '$(build.artifactstagingdirectory)'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'warfile'
+    publishLocation: 'Container'
 
